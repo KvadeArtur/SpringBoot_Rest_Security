@@ -28,7 +28,7 @@ public class StockController {
     private StockRepo stockRepo;
 
     @PostMapping
-    public @ResponseBody ResponseEntity  saveStock
+    public @ResponseBody CompletableFuture<ResponseEntity>  saveStock
             (@RequestParam(value = "comment", required=true) String comment,
              @RequestParam(value = "sizeOfTheCapital", required=true) Integer sizeOfTheCapital,
              @RequestParam(value = "edrpou", required=true) Integer edrpou,
@@ -38,15 +38,15 @@ public class StockController {
              @RequestParam(value = "date", required=true) Date date) {
 
         try {
-            stockService.getSaveStock(comment, sizeOfTheCapital, edrpou, quantity, nominalValue, duty, date);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return stockService.getSaveStock(comment, sizeOfTheCapital, edrpou, quantity, nominalValue, duty, date)
+                    .thenApply(ResponseEntity::ok);
         } catch(Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
         }
     }
 
-    @PutMapping
-    public @ResponseBody ResponseEntity  putStock
+    @PutMapping (value = "/{id}")
+    public @ResponseBody CompletableFuture<ResponseEntity>  putStock
             (@PathVariable("id") Integer id,
              @RequestParam(value = "comment", required=false) String comment,
              @RequestParam(value = "sizeOfTheCapital", required=false) Integer sizeOfTheCapital,
@@ -58,31 +58,32 @@ public class StockController {
 
         try {
             Stock stock = new Stock(comment, sizeOfTheCapital, edrpou, quantity, nominalValue, duty, date);
-            stockService.getPutStock(id, stock);
-            return ResponseEntity.status(HttpStatus.OK).build();
+            return stockService.getPutStock(id, stock).thenApply(ResponseEntity::ok);
         } catch(Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
         }
     }
 
-//    @GetMapping
-//    public @ResponseBody CompletableFuture<ResponseEntity> filters
-//            (@RequestParam(value = "page", required=true) Integer page,
-//             @RequestParam(value = "nameFilter", required=true) String nameFilter) {
-//
-//        int value = (page * 10) - 9;
-//
-//        if (stockRepo.count() < value) {
-//            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-//        } else {
-//            return stockService.getFilter(page, nameFilter).<ResponseEntity>thenApply(ResponseEntity::ok)
-//                    .exceptionally(handleGetProductFailure);
-//        }
-//    }
-//
-//    private static Function<Throwable, ResponseEntity<? extends String>> handleGetProductFailure = throwable -> {
-//        LOGGER.error("Failed to read records: {}", throwable);
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//    };
+    @GetMapping (value = "/{id}")
+    public @ResponseBody CompletableFuture<ResponseEntity> get
+            (@PathVariable("id") Integer id) {
+
+        try {
+            return stockService.getter(id).thenApply(ResponseEntity::ok);
+        } catch(Exception ex) {
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+        }
+    }
+
+    @GetMapping (value = "/edrpou/{edrpou}")
+    public @ResponseBody CompletableFuture<ResponseEntity> getByEdrpou
+            (@PathVariable("edrpou") Integer edrpou) {
+
+        try {
+            return stockService.getterByEdrpou(edrpou).thenApply(ResponseEntity::ok);
+        } catch(Exception ex) {
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+        }
+    }
 
 }

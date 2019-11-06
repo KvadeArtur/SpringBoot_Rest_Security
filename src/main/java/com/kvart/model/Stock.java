@@ -18,13 +18,13 @@ public class Stock {
     @Column(length = 200)
     private String comment;
 
-    private int sizeOfTheCapital;
-    private int edrpou;
-    private int quantity;
+    private Integer sizeOfTheCapital;
+    private Integer edrpou;
+    private Integer quantity;
 
-    private double nominalValue;
-    private double totalValue;
-    private double duty;
+    private Double nominalValue;
+    private Double totalValue;
+    private Double duty;
 
     private Date date;
 
@@ -33,8 +33,8 @@ public class Stock {
     public Stock() {
     }
 
-    public Stock(String comment, int sizeOfTheCapital, int edrpou,
-                 int quantity, double nominalValue, double duty, Date date) {
+    public Stock(String comment, Integer sizeOfTheCapital, Integer edrpou,
+                 Integer quantity, Double nominalValue, Double duty, Date date) {
         this.comment = comment;
         this.sizeOfTheCapital = sizeOfTheCapital;
         this.edrpou = edrpou;
@@ -53,27 +53,27 @@ public class Stock {
         return comment;
     }
 
-    public int getSizeOfTheCapital() {
+    public Integer getSizeOfTheCapital() {
         return sizeOfTheCapital;
     }
 
-    public int getEdrpou() {
+    public Integer getEdrpou() {
         return edrpou;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public double getNominalValue() {
+    public Double getNominalValue() {
         return nominalValue;
     }
 
-    public double getTotalValue() {
+    public Double getTotalValue() {
         return totalValue;
     }
 
-    public double getDuty() {
+    public Double getDuty() {
         return duty;
     }
 
@@ -128,6 +128,17 @@ public class Stock {
                 ", duty=" + duty +
                 ", date=" + date +
                 ", changes=" + changes +
+                '}';
+    }
+
+    public String toStringPublic() {
+        return "Stock{" +
+                "id=" + id +
+                ", edrpou=" + edrpou +
+                ", quantity=" + quantity +
+                ", nominalValue=" + nominalValue +
+                ", totalValue=" + totalValue +
+                ", date=" + date +
                 '}';
     }
 }

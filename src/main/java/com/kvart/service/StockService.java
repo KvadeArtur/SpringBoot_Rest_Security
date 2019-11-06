@@ -24,18 +24,20 @@ public class StockService {
     private StockRepo stockRepo;
 
     @Async
-    public void getSaveStock(String comment, int sizeOfTheCapital, int edrpou,
-                             int quantity, double nominalValue, double duty, Date date) {
+    public CompletableFuture<String> getSaveStock(String comment, Integer sizeOfTheCapital, Integer edrpou,
+                             Integer quantity, Double nominalValue, Double duty, Date date) {
 
         LOGGER.info("Save new stock");
 
         Stock stock = new Stock(comment, sizeOfTheCapital, edrpou, quantity, nominalValue, duty, date);
 
         stockRepo.save(stock);
+
+        return CompletableFuture.completedFuture("Done");
     }
 
     @Async
-    public void getPutStock(Integer id, Stock stock) {
+    public CompletableFuture<String> getPutStock(Integer id, Stock stock) {
 
         LOGGER.info("Put stock by id");
 
@@ -43,48 +45,66 @@ public class StockService {
 
         changes.append(stockRepo.findById(id).toString());
         changes.append("\nChange to:\n ");
-        changes.append(stock.toString());
 
-        stockRepo.findById(id).get().setComment(stock.getComment());
-        stockRepo.findById(id).get().setSizeOfTheCapital(stock.getSizeOfTheCapital());
-        stockRepo.findById(id).get().setEdrpou(stock.getEdrpou());
-        stockRepo.findById(id).get().setQuantity(stock.getQuantity());
-        stockRepo.findById(id).get().setNominalValue(stock.getNominalValue());
-        stockRepo.findById(id).get().setDuty(stock.getDuty());
-        stockRepo.findById(id).get().setDate(stock.getDate());
+        if (stock.getComment() != null) {
+            stockRepo.findById(id).get().setComment(stock.getComment());
+            changes.append("New Comment: " + stock.getComment() + "; ");
+        }
+
+        if (stock.getSizeOfTheCapital() != null) {
+            stockRepo.findById(id).get().setSizeOfTheCapital(stock.getSizeOfTheCapital());
+            changes.append("New Size of the capital: " + stock.getSizeOfTheCapital() + "; ");
+        }
+
+        if (stock.getEdrpou() != null) {
+            stockRepo.findById(id).get().setEdrpou(stock.getEdrpou());
+            changes.append("New EDRPOU: " + stock.getEdrpou() + "; ");
+        }
+
+        if (stock.getQuantity() != null) {
+            stockRepo.findById(id).get().setQuantity(stock.getQuantity());
+            changes.append("New Quantity: " + stock.getQuantity() + "; ");
+        }
+
+        if (stock.getNominalValue() != null) {
+            stockRepo.findById(id).get().setNominalValue(stock.getNominalValue());
+            changes.append("New Nominal value: " + stock.getNominalValue() + "; ");
+        }
+
+        if (stock.getDuty() != null) {
+            stockRepo.findById(id).get().setDuty(stock.getDuty());
+            changes.append("New Duty: " + stock.getDuty() + "; ");
+        }
+
+        if (stock.getDate() != null) {
+            stockRepo.findById(id).get().setDate(stock.getDate());
+            changes.append("New Date: " + stock.getDate() + "; ");
+        }
+
         stockRepo.findById(id).get().getChanges().add(changes.toString());
 
+        return CompletableFuture.completedFuture("Stock is changed");
     }
 
 
 
-//    @Async
-//    public CompletableFuture<String> getFilter(int page, String nameFilter) {
-//
-//        LOGGER.info("Request to get a list product with filter");
-//
-//        int to = page * 10;
-//        int from = to - 9;
-//
-//        List<Stock> productList = (List<Stock>) stockRepo.findAll();
-//
-//        if (to > productList.size()) {
-//            to = productList.size();
-//        }
-//
-//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//        StringBuilder result = new StringBuilder();
-//
-//        Pattern pattern = Pattern.compile(nameFilter, Pattern.CASE_INSENSITIVE);
-//
-//        for (Stock product: productList.subList(from, to)) {
-//            if (!pattern.matcher(product.getName()).matches()) {
-//                String json = gson.toJson(product);
-//                result.append(json);
-//            }
-//        }
-//
-//        final String stringResult = result.toString();
-//        return CompletableFuture.completedFuture(stringResult);
-//    }
+    @Async
+    public CompletableFuture<String> getter(Integer id) {
+
+        LOGGER.info("Request to get by id");
+
+        String stringResult = stockRepo.findById(id).get().toStringPublic();
+
+        return CompletableFuture.completedFuture(stringResult);
+    }
+
+    @Async
+    public CompletableFuture<String> getterByEdrpou(Integer edrpou) {
+
+        LOGGER.info("Request to get by edrpou");
+
+        List<Stock> listEdrpou = stockRepo.findByEdrpou(edrpou);
+
+        return CompletableFuture.completedFuture(listEdrpou.toString());
+    }
 }
