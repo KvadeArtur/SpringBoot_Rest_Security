@@ -2,7 +2,7 @@ package com.kvart.controller;
 
 import com.kvart.model.Stock;
 import com.kvart.repo.StockRepo;
-import com.kvart.service.StockService;
+import com.kvart.service.PublicService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +13,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 @Controller
 @RequestMapping("/public")
-public class StockController {
+public class PublicController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StockController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PublicController.class);
 
     @Autowired
-    private StockService stockService;
+    private PublicService publicService;
 
     @Autowired
     private StockRepo stockRepo;
@@ -38,7 +37,7 @@ public class StockController {
              @RequestParam(value = "date", required=true) Date date) {
 
         try {
-            return stockService.getSaveStock(comment, sizeOfTheCapital, edrpou, quantity, nominalValue, duty, date)
+            return publicService.getSaveStock(comment, sizeOfTheCapital, edrpou, quantity, nominalValue, duty, date)
                     .thenApply(ResponseEntity::ok);
         } catch(Exception ex) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
@@ -58,7 +57,7 @@ public class StockController {
 
         try {
             Stock stock = new Stock(comment, sizeOfTheCapital, edrpou, quantity, nominalValue, duty, date);
-            return stockService.getPutStock(id, stock).thenApply(ResponseEntity::ok);
+            return publicService.getPutStock(id, stock).thenApply(ResponseEntity::ok);
         } catch(Exception ex) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
         }
@@ -69,7 +68,7 @@ public class StockController {
             (@PathVariable("id") Integer id) {
 
         try {
-            return stockService.getter(id).thenApply(ResponseEntity::ok);
+            return publicService.getter(id).thenApply(ResponseEntity::ok);
         } catch(Exception ex) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
         }
@@ -80,7 +79,7 @@ public class StockController {
             (@PathVariable("edrpou") Integer edrpou) {
 
         try {
-            return stockService.getterByEdrpou(edrpou).thenApply(ResponseEntity::ok);
+            return publicService.getterByEdrpou(edrpou).thenApply(ResponseEntity::ok);
         } catch(Exception ex) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
         }

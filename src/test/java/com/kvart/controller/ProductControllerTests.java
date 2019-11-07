@@ -41,7 +41,7 @@ public class ProductControllerTests {
     private StockRepo productRepo;
 
     @MockBean
-    StockController controller;
+    PublicController controller;
 
     @Before
     public void setup() {

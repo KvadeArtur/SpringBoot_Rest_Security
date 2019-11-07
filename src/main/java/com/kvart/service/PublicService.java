@@ -1,7 +1,5 @@
 package com.kvart.service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.kvart.model.Stock;
 import com.kvart.repo.StockRepo;
 import org.slf4j.Logger;
@@ -10,15 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Pattern;
 
 @Service
-public class StockService {
+public class PublicService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StockService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PublicService.class);
 
     @Autowired
     private StockRepo stockRepo;
@@ -105,6 +103,12 @@ public class StockService {
 
         List<Stock> listEdrpou = stockRepo.findByEdrpou(edrpou);
 
-        return CompletableFuture.completedFuture(listEdrpou.toString());
+        List<String> publicEdrpou = new ArrayList<>();
+
+        for (Stock stock: listEdrpou) {
+            publicEdrpou.add(stock.toStringPublic());
+        }
+
+        return CompletableFuture.completedFuture(publicEdrpou.toString());
     }
 }
