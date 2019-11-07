@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -110,5 +108,64 @@ public class PublicService {
         }
 
         return CompletableFuture.completedFuture(publicEdrpou.toString());
+    }
+
+    @Async
+    public CompletableFuture<String> getterSort(String sort, Integer page) {
+
+        LOGGER.info("Request to get with sort");
+
+        int to = page * 10;
+        int from = to - 9;
+
+        List<Stock> stockList = (List<Stock>) stockRepo.findAll();
+
+        if (to > stockList.size()) {
+            to = stockList.size();
+        }
+
+        stockList = stockList.subList(from, to);
+
+        if (sort.equals("sizeOfTheCapital")) {
+
+            Collections.sort(stockList, new Comparator<Stock>() {
+                @Override
+                public int compare(Stock o1, Stock o2) {
+                    return Integer.compare(o1.getSizeOfTheCapital(), o2.getSizeOfTheCapital());
+                }
+            });
+        } else if (sort.equals("edrpou")){
+
+            Collections.sort(stockList, new Comparator<Stock>() {
+                @Override
+                public int compare(Stock o1, Stock o2) {
+                    return Integer.compare(o1.getEdrpou(), o2.getEdrpou());
+                }
+            });
+        } else if (sort.equals("nominalValue")) {
+
+            Collections.sort(stockList, new Comparator<Stock>() {
+                @Override
+                public int compare(Stock o1, Stock o2) {
+                    return Double.compare(o1.getNominalValue(), o2.getNominalValue());
+                }
+            });
+        } else if (sort.equals("date")) {
+
+            Collections.sort(stockList, new Comparator<Stock>() {
+                @Override
+                public int compare(Stock o1, Stock o2) {
+                    return o1.getDate().toString().compareTo(o2.getDate().toString());
+                }
+            });
+        }
+
+        List<String> publicSort = new ArrayList<>();
+
+        for (Stock stock: stockList) {
+            publicSort.add(stock.toStringPublic());
+        }
+
+        return CompletableFuture.completedFuture(publicSort.toString());
     }
 }

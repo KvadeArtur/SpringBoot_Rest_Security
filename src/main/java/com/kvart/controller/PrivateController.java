@@ -49,4 +49,22 @@ public class PrivateController {
         }
     }
 
+    @GetMapping
+    public @ResponseBody CompletableFuture<ResponseEntity> getSort
+            (@RequestParam(value = "sort", required=true) String sort,
+             @RequestParam(value = "page", required=true) Integer page) {
+
+        int value = (page * 10) - 9;
+
+        if (stockRepo.count() < value) {
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        } else {
+            try {
+                return privateService.getterSort(sort, page).thenApply(ResponseEntity::ok);
+            } catch(Exception ex) {
+                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+            }
+        }
+    }
+
 }

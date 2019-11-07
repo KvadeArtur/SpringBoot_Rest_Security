@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -38,5 +40,58 @@ public class PrivateService {
         List<Stock> listEdrpou = stockRepo.findByEdrpou(edrpou);
 
         return CompletableFuture.completedFuture(listEdrpou.toString());
+    }
+
+    @Async
+    public CompletableFuture<String> getterSort(String sort, Integer page) {
+
+        LOGGER.info("Request to get with sort");
+
+        int to = page * 10;
+        int from = to - 9;
+
+        List<Stock> stockList = (List<Stock>) stockRepo.findAll();
+
+        if (to > stockList.size()) {
+            to = stockList.size();
+        }
+
+        stockList = stockList.subList(from, to);
+
+        if (sort.equals("sizeOfTheCapital")) {
+
+            Collections.sort(stockList, new Comparator<Stock>() {
+                @Override
+                public int compare(Stock o1, Stock o2) {
+                    return Integer.compare(o1.getSizeOfTheCapital(), o2.getSizeOfTheCapital());
+                }
+            });
+        } else if (sort.equals("edrpou")){
+
+            Collections.sort(stockList, new Comparator<Stock>() {
+                @Override
+                public int compare(Stock o1, Stock o2) {
+                    return Integer.compare(o1.getEdrpou(), o2.getEdrpou());
+                }
+            });
+        } else if (sort.equals("nominalValue")) {
+
+            Collections.sort(stockList, new Comparator<Stock>() {
+                @Override
+                public int compare(Stock o1, Stock o2) {
+                    return Double.compare(o1.getNominalValue(), o2.getNominalValue());
+                }
+            });
+        } else if (sort.equals("date")) {
+
+            Collections.sort(stockList, new Comparator<Stock>() {
+                @Override
+                public int compare(Stock o1, Stock o2) {
+                    return o1.getDate().toString().compareTo(o2.getDate().toString());
+                }
+            });
+        }
+
+        return CompletableFuture.completedFuture(stockList.toString());
     }
 }

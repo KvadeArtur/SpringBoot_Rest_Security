@@ -30,108 +30,39 @@ import java.util.concurrent.CompletableFuture;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ProductControllerTests {
+public class PublicControllerTests {
 
     @Autowired
     MockMvc mvc;
 
-    private Stock product;
+    private Stock Stock;
 
     @Autowired
-    private StockRepo productRepo;
+    private StockRepo stockRepo;
 
     @MockBean
     PublicController controller;
 
     @Before
     public void setup() {
-        product = new Stock("Eva", "qwerty");
-        productRepo.save(product);
 
-        product = new Stock("Eva", "qwasdfy");
-        productRepo.save(product);
-
-        product = new Stock("Mulo", "oiuztrty");
-        productRepo.save(product);
-
-        product = new Stock("Mulo", "mnbvy");
-        productRepo.save(product);
-
-        product = new Stock("Gel", "trewy");
-        productRepo.save(product);
-
-        product = new Stock("Gel", "qweasdf");
-        productRepo.save(product);
-
-        product = new Stock("Shampu", "qwyxcv");
-        productRepo.save(product);
-
-        product = new Stock("Mulo", "rfvbghz");
-        productRepo.save(product);
-
-        product = new Stock("Pasta", "iuztfghnj");
-        productRepo.save(product);
-
-        product = new Stock("Shampu", "qayxcdfr");
-        productRepo.save(product);
-
-        product = new Stock("Pasta", "poiuz");
-        productRepo.save(product);
-
-        product = new Stock("Eva", "mnbvcv");
-        productRepo.save(product);
     }
 
     @After
     public void cleanup() {
-        productRepo.deleteAll();
+        stockRepo.deleteAll();
     }
 
 
 
     @Test
-    public void testGetFilters() throws Exception {
+    public void testGetSort() throws Exception {
 
-        String regEx = "^.*[ev].*$";
-        String resultStr = "{ \"id\": 11, \"name\": \"Pasta\", \"description\": \"poiuz\" }";
-
-        CompletableFuture<ResponseEntity> fullResult =
-                CompletableFuture.completedFuture(resultStr).thenApply(ResponseEntity::ok);
-
-        when(controller.filters(2, regEx)).thenReturn(fullResult);
-
-
-        MvcResult mvcResult = mvc.perform(get("/shop/product?page=2&nameFilter=" + regEx))
-                .andExpect(request().asyncStarted())
-                .andDo(MockMvcResultHandlers.log())
-                .andReturn();
-
-        mvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith("text/plain"))
-                .andExpect(content()
-                        .string("{ \"id\": 11, \"name\": \"Pasta\", \"description\": \"poiuz\" }"));
-
-        verify(controller, times(1)).filters(2, regEx);
     }
 
     @Test
-    public void testGetFiltersNotFound() throws Exception {
-
-        String regEx = "^.*[ev].*$";
-
-        when(controller.filters(3, regEx))
-                .thenReturn(CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).build()));
+    public void testGetSortNotFound() throws Exception {
 
 
-        MvcResult mvcResult = mvc.perform(get("/shop/product?page=3&nameFilter=" + regEx))
-                .andExpect(request().asyncStarted())
-                .andDo(MockMvcResultHandlers.log())
-                .andReturn();
-
-        mvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isNotFound());
-
-        verify(controller, times(1)).filters(3, regEx);
     }
 }
