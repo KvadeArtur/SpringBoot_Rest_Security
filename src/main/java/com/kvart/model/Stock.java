@@ -26,15 +26,17 @@ public class Stock {
     private Double totalValue;
     private Double duty;
 
-    private Date date;
+    private Date date = new Date();
 
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "changes", joinColumns = @JoinColumn(name = "stock_id"))
     private List<String> changes = new ArrayList<>();
 
     public Stock() {
     }
 
     public Stock(String comment, Integer sizeOfTheCapital, Integer edrpou,
-                 Integer quantity, Double nominalValue, Double duty, Date date) {
+                 Integer quantity, Double nominalValue, Double duty) {
         this.comment = comment;
         this.sizeOfTheCapital = sizeOfTheCapital;
         this.edrpou = edrpou;
@@ -42,7 +44,6 @@ public class Stock {
         this.nominalValue = nominalValue;
         this.totalValue = quantity * nominalValue;
         this.duty = duty;
-        this.date = date;
     }
 
     public int getId() {

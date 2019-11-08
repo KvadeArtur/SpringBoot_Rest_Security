@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
@@ -33,30 +32,28 @@ public class PublicController {
              @RequestParam(value = "edrpou", required=true) Integer edrpou,
              @RequestParam(value = "quantity", required=true) Integer quantity,
              @RequestParam(value = "nominalValue", required=true) Double nominalValue,
-             @RequestParam(value = "duty", required=true) Double duty,
-             @RequestParam(value = "date", required=true) Date date) {
+             @RequestParam(value = "duty", required=true) Double duty) {
 
         try {
-            return publicService.getSaveStock(comment, sizeOfTheCapital, edrpou, quantity, nominalValue, duty, date)
+            return publicService.getSaveStock(comment, sizeOfTheCapital, edrpou, quantity, nominalValue, duty)
                     .thenApply(ResponseEntity::ok);
         } catch(Exception ex) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
         }
     }
 
-    @PutMapping (value = "/{id}")
+    @PutMapping
     public @ResponseBody CompletableFuture<ResponseEntity>  putStock
-            (@PathVariable("id") Integer id,
+            (@RequestParam(value = "id", required=true) Integer id,
              @RequestParam(value = "comment", required=false) String comment,
              @RequestParam(value = "sizeOfTheCapital", required=false) Integer sizeOfTheCapital,
              @RequestParam(value = "edrpou", required=false) Integer edrpou,
              @RequestParam(value = "quantity", required=false) Integer quantity,
              @RequestParam(value = "nominalValue", required=false) Double nominalValue,
-             @RequestParam(value = "duty", required=false) Double duty,
-             @RequestParam(value = "date", required=false) Date date) {
+             @RequestParam(value = "duty", required=false) Double duty) {
 
         try {
-            Stock stock = new Stock(comment, sizeOfTheCapital, edrpou, quantity, nominalValue, duty, date);
+            Stock stock = new Stock(comment, sizeOfTheCapital, edrpou, quantity, nominalValue, duty);
             return publicService.getPutStock(id, stock).thenApply(ResponseEntity::ok);
         } catch(Exception ex) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
@@ -74,9 +71,9 @@ public class PublicController {
         }
     }
 
-    @GetMapping (value = "/edrpou/{edrpou}")
+    @GetMapping (value = "/edrpou")
     public @ResponseBody CompletableFuture<ResponseEntity> getByEdrpou
-            (@PathVariable("edrpou") Integer edrpou) {
+            (@RequestParam(value = "edrpou", required=true) Integer edrpou) {
 
         try {
             return publicService.getterByEdrpou(edrpou).thenApply(ResponseEntity::ok);

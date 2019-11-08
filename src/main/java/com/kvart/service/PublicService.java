@@ -21,11 +21,11 @@ public class PublicService {
 
     @Async
     public CompletableFuture<String> getSaveStock(String comment, Integer sizeOfTheCapital, Integer edrpou,
-                             Integer quantity, Double nominalValue, Double duty, Date date) {
+                             Integer quantity, Double nominalValue, Double duty) {
 
         LOGGER.info("Save new stock");
 
-        Stock stock = new Stock(comment, sizeOfTheCapital, edrpou, quantity, nominalValue, duty, date);
+        Stock stock = new Stock(comment, sizeOfTheCapital, edrpou, quantity, nominalValue, duty);
 
         stockRepo.save(stock);
 
@@ -124,7 +124,7 @@ public class PublicService {
             to = stockList.size();
         }
 
-        stockList = stockList.subList(from, to);
+        stockList = stockList.subList(from - 1, to);
 
         if (sort.equals("sizeOfTheCapital")) {
 

@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
+import static org.springframework.http.HttpMethod.*;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -19,7 +21,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers( "/public").permitAll()
+                .antMatchers(GET, "/public", "/public/*", "/public/edrpou").permitAll()
+                .antMatchers(PUT, "/public").permitAll()
+                .antMatchers(POST, "/public").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
