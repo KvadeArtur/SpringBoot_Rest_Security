@@ -131,15 +131,4 @@ public class Stock {
                 ", changes=" + changes +
                 '}';
     }
-
-    public String toStringPublic() {
-        return "Stock{" +
-                "id=" + id +
-                ", edrpou=" + edrpou +
-                ", quantity=" + quantity +
-                ", nominalValue=" + nominalValue +
-                ", totalValue=" + totalValue +
-                ", date=" + date +
-                '}';
-    }
 }

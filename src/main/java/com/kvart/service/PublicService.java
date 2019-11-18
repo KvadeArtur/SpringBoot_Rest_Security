@@ -1,7 +1,9 @@
 package com.kvart.service;
 
+import com.kvart.DTO.StockDTO;
 import com.kvart.model.Stock;
 import com.kvart.repo.StockRepo;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 public class PublicService {
@@ -18,6 +21,9 @@ public class PublicService {
 
     @Autowired
     private StockRepo stockRepo;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Async
     public CompletableFuture<String> getSaveStock(String comment, Integer sizeOfTheCapital, Integer edrpou,
@@ -89,7 +95,7 @@ public class PublicService {
 
         LOGGER.info("Request to get by id");
 
-        String stringResult = stockRepo.findById(id).get().toStringPublic();
+        String stringResult = convertToDto(stockRepo.findById(id).get()).toString();
 
         return CompletableFuture.completedFuture(stringResult);
     }
@@ -101,13 +107,12 @@ public class PublicService {
 
         List<Stock> listEdrpou = stockRepo.findByEdrpou(edrpou);
 
-        List<String> publicEdrpou = new ArrayList<>();
+        listEdrpou.stream()
+                .map(stock -> convertToDto(stock))
+                .collect(Collectors.toList());
 
-        for (Stock stock: listEdrpou) {
-            publicEdrpou.add(stock.toStringPublic());
-        }
 
-        return CompletableFuture.completedFuture(publicEdrpou.toString());
+        return CompletableFuture.completedFuture(listEdrpou.toString());
     }
 
     @Async
@@ -160,12 +165,15 @@ public class PublicService {
             });
         }
 
-        List<String> publicSort = new ArrayList<>();
+        stockList.stream()
+                .map(stock -> convertToDto(stock))
+                .collect(Collectors.toList());
 
-        for (Stock stock: stockList) {
-            publicSort.add(stock.toStringPublic());
-        }
+        return CompletableFuture.completedFuture(stockList.toString());
+    }
 
-        return CompletableFuture.completedFuture(publicSort.toString());
+    private StockDTO convertToDto(Stock stock) {
+        StockDTO stockDTO = modelMapper.map(stock, StockDTO.class);
+        return stockDTO;
     }
 }
