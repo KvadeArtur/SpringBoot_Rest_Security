@@ -7,9 +7,13 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -120,49 +124,29 @@ public class PublicService {
 
         LOGGER.info("Request to get with sort");
 
-        int to = page * 10;
-        int from = to - 9;
-
-        List<Stock> stockList = (List<Stock>) stockRepo.findAll();
-
-        if (to > stockList.size()) {
-            to = stockList.size();
-        }
-
-        stockList = stockList.subList(from - 1, to);
+        Pageable sorted;
+        Page<Stock> stockList = null;
 
         if (sort.equals("sizeOfTheCapital")) {
 
-            Collections.sort(stockList, new Comparator<Stock>() {
-                @Override
-                public int compare(Stock o1, Stock o2) {
-                    return Integer.compare(o1.getSizeOfTheCapital(), o2.getSizeOfTheCapital());
-                }
-            });
+            sorted = PageRequest.of(page - 1, 10, Sort.by("sizeOfTheCapital"));
+            stockList = stockRepo.findAll(sorted);
+
         } else if (sort.equals("edrpou")){
 
-            Collections.sort(stockList, new Comparator<Stock>() {
-                @Override
-                public int compare(Stock o1, Stock o2) {
-                    return Integer.compare(o1.getEdrpou(), o2.getEdrpou());
-                }
-            });
+            sorted = PageRequest.of(page - 1, 10, Sort.by("edrpou"));
+            stockList = stockRepo.findAll(sorted);
+
         } else if (sort.equals("nominalValue")) {
 
-            Collections.sort(stockList, new Comparator<Stock>() {
-                @Override
-                public int compare(Stock o1, Stock o2) {
-                    return Double.compare(o1.getNominalValue(), o2.getNominalValue());
-                }
-            });
+            sorted = PageRequest.of(page - 1, 10, Sort.by("nominalValue"));
+            stockList = stockRepo.findAll(sorted);
+
         } else if (sort.equals("date")) {
 
-            Collections.sort(stockList, new Comparator<Stock>() {
-                @Override
-                public int compare(Stock o1, Stock o2) {
-                    return o1.getDate().toString().compareTo(o2.getDate().toString());
-                }
-            });
+            sorted = PageRequest.of(page - 1, 10, Sort.by("date"));
+            stockList = stockRepo.findAll(sorted);
+
         }
 
         stockList.stream()
